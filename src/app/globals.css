@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background: #0b1220;
+}
+
+body {
+  min-height: 100vh;
+  color: #e2e8f0;
+  font-family: "Prompt", "Noto Sans Thai", system-ui, sans-serif;
+  /* deep-sea feel: soft cyan glow at the top, darker blue at the bottom */
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(79, 195, 247, 0.14), transparent 60%),
+    radial-gradient(800px 500px at 90% 100%, rgba(30, 136, 229, 0.1), transparent 60%),
+    #0b1220;
+  background-attachment: fixed;
+}
+
+/* Placeholder text that disappears as soon as the Botnoi script puts something inside the slot. */
+#chatbot-slot:empty::before {
+  content: "แชทบอทจะเชื่อมที่นี่";
+  color: #64748b;
+  font-size: 0.9rem;
+}

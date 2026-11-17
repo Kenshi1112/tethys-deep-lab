@@ -1,0 +1,31 @@
+✔ GET /rooms returns 12 rooms, the 3 demo bookings and topic floors (109.173212ms)
+✔ check-in succeeds and the room shows as occupied on the board (33.797328ms)
+✔ topic can be given as a code in any case, or as the full name in any case (41.803799ms)
+✔ floor may be sent as a string, and the name is trimmed (10.032403ms)
+✔ topic A on floor 3 -> TOPIC_NOT_ALLOWED_ON_FLOOR with allowed floors (13.304204ms)
+✔ occupied room -> ROOM_OCCUPIED with suggestions on allowed floors only (16.085562ms)
+✔ same name checking in twice -> ALREADY_CHECKED_IN (16.485385ms)
+✔ unknown topic -> TOPIC_NOT_FOUND (10.888508ms)
+✔ unknown room, or room on the wrong floor -> ROOM_NOT_FOUND (30.504316ms)
+✔ missing fields -> MISSING_FIELDS (each field, blank values, empty body, broken JSON) (39.425656ms)
+✔ validation runs in the documented order (34.941326ms)
+✔ two simultaneous check-ins for the same room: only one succeeds (88.088739ms)
+✔ 20 simultaneous check-ins for one room: exactly one succeeds (109.738276ms)
+✔ one name checking in to two rooms at the same moment: only one succeeds (13.792252ms)
+✔ checkout-lookup finds an existing person (case-insensitive, trimmed) (31.315546ms)
+✔ checkout-lookup for an unknown name -> NOT_FOUND (9.141717ms)
+✔ checkout frees the room and the room can be taken again (33.663523ms)
+✔ checkout for an unknown name, or a second checkout -> NOT_FOUND (23.301085ms)
+✔ name matching is case-insensitive for check-in and check-out (27.469864ms)
+✔ every response has the { ok, code, message_th, data } shape and Thai text (17.252002ms)
+✔ POST without key -> 401 UNAUTHORIZED (107.084052ms)
+✔ POST with a wrong key -> 401, with the right key -> works (43.197331ms)
+✔ GET /rooms stays public even when a key is set (the browser needs it) (9.110568ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1008.058253
