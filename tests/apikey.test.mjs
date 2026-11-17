@@ -30,3 +30,11 @@ test("GET /rooms stays public even when a key is set (the browser needs it)", { 
   const res = await fetch(BASE + "/api/public/rooms");
   assert.equal(res.status, 200);
 });
+
+test("available: POST and GET need the key too (only GET /rooms is public)", { skip }, async () => {
+  assert.equal((await post("/api/public/rooms/available", {}, {}, BASE)).status, 401);
+  assert.equal((await fetch(BASE + "/api/public/rooms/available")).status, 401);
+  assert.equal((await post("/api/public/rooms/available", { topic: "A" }, { "x-api-key": KEY }, BASE)).json.code, "OK");
+  const g = await fetch(BASE + "/api/public/rooms/available?floor=1", { headers: { "x-api-key": KEY } });
+  assert.equal((await g.json()).code, "OK");
+});

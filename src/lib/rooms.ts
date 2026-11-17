@@ -205,3 +205,70 @@ export async function checkout(body: Record<string, unknown>): Promise<Result> {
     data: { name: b.person_name, floor: b.floor, room: b.room },
   };
 }
+
+// Free rooms for the chatbot. Both filters are optional.
+export async function available(body: Record<string, unknown>): Promise<Result> {
+  const topicIn = s(body.topic);
+  const floorIn = s(body.floor);
+  const topics = await getTopics();
+
+  // Unknown topic -> TOPIC_NOT_FOUND (same matching as check-in: code or full name)
+  let topic: Topic | null = null;
+  if (topicIn) {
+    topic = topics.find((t) => t.code.toLowerCase() === topicIn.toLowerCase() || t.name.toLowerCase() === topicIn.toLowerCase()) ?? null;
+    if (!topic) {
+      return { code: "TOPIC_NOT_FOUND", message_th: `ไม่พบหัวข้อ "${topicIn}" (ใช้ได้: A, B, C)`, data: { valid_topics: ["A", "B", "C"] } };
+    }
+  }
+
+  // Unknown floor -> ROOM_NOT_FOUND
+  const all = await pool().query(
+    `SELECT r.code, r.floor, (b.id IS NULL) AS is_free
+       FROM rooms r LEFT JOIN bookings b ON b.room_id = r.id AND b.checked_out_at IS NULL
+      ORDER BY r.code`
+  );
+  const allFloors = [...new Set(all.rows.map((r) => r.floor as number))].sort((a, b) => a - b);
+  let floor: number | null = null;
+  if (floorIn) {
+    floor = /^\d+$/.test(floorIn) ? Number(floorIn) : NaN;
+    if (!allFloors.includes(floor)) {
+      return { code: "ROOM_NOT_FOUND", message_th: `ไม่พบชั้น ${floorIn} (มีชั้น ${allFloors.join(", ")})`, data: { valid_floors: allFloors } };
+    }
+  }
+
+  // Topic not allowed on that floor (same message as check-in)
+  if (topic && floor !== null && !topic.floors.includes(floor)) {
+    return {
+      code: "TOPIC_NOT_ALLOWED_ON_FLOOR",
+      message_th: `หัวข้อ ${topic.code} ทำได้เฉพาะชั้น ${topic.floors.join(", ")} จองชั้น ${floor} ไม่ได้`,
+      data: { allowed_floors: topic.floors },
+    };
+  }
+
+  // Which floors to report
+  const wanted = floor !== null ? [floor] : topic ? topic.floors : allFloors;
+  const floors = wanted.map((f) => {
+    const inFloor = all.rows.filter((r) => r.floor === f);
+    return {
+      floor: f,
+      allowed_topics: topics.filter((t) => t.floors.includes(f)).map((t) => t.code),
+      free_rooms: inFloor.filter((r) => r.is_free).map((r) => r.code as string),
+      occupied_count: inFloor.filter((r) => !r.is_free).length,
+    };
+  });
+  const total_free = floors.reduce((n, f) => n + f.free_rooms.length, 0);
+
+  // Short Thai summary the bot can read out directly
+  const message_th =
+    total_free === 0
+      ? "ตอนนี้ไม่มีห้องว่างตามเงื่อนไขนี้"
+      : floors
+          .map((f) =>
+            f.free_rooms.length
+              ? `ชั้น ${f.floor} ว่าง ${f.free_rooms.join(", ")} (ทำหัวข้อ ${f.allowed_topics.join(", ")} ได้)`
+              : `ชั้น ${f.floor} ไม่มีห้องว่าง`
+          )
+          .join("; ");
+
+  return { code: "OK", message_th, data: { total_free, floors } };
+}

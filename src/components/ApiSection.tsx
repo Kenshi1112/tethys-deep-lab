@@ -48,6 +48,9 @@ export default function ApiSection() {
   }
 
   const checkinBody = { name, topic, floor: Number(floor) || floor, room };
+  // "available" filters are optional: leave the topic/floor boxes empty to see every free room
+  const availBody = { ...(topic.trim() ? { topic: topic.trim() } : {}), ...(floor.trim() ? { floor: Number(floor) || floor.trim() } : {}) };
+  const availQuery = new URLSearchParams(Object.fromEntries(Object.entries(availBody).map(([k, v]) => [k, String(v)]))).toString();
   const btn = "inline-flex items-center gap-1.5 rounded-lg border border-glow/40 bg-glow/10 px-3 py-1.5 text-sm text-glow transition hover:bg-glow/20 disabled:opacity-50";
   const input = "w-full rounded-lg border border-white/10 bg-abyss px-2.5 py-1.5 text-sm text-white placeholder:text-slate-600 focus:border-glow focus:outline-none";
   const code = "overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-3 text-xs leading-relaxed text-slate-300";
@@ -87,6 +90,12 @@ export default function ApiSection() {
           <pre className={code}>{`# ดูสถานะห้องทั้งหมด
 curl ${origin}/api/public/rooms
 
+# ดูห้องว่าง (filter topic / floor ใส่หรือไม่ใส่ก็ได้)
+curl -X POST ${origin}/api/public/rooms/available \\
+  -H "Content-Type: application/json"${keyHdr} \\
+  -d '${JSON.stringify(availBody)}'
+curl "${origin}/api/public/rooms/available${availQuery ? "?" + availQuery : ""}"${apiKey ? ' -H "x-api-key: <YOUR_KEY>"' : ""}
+
 # เช็คอิน
 curl -X POST ${origin}/api/public/rooms/checkin \\
   -H "Content-Type: application/json"${keyHdr} \\
@@ -118,11 +127,14 @@ curl -X POST ${origin}/api/public/rooms/checkout \\
             </label>
             <div className="mt-3 flex flex-wrap gap-2">
               <button className={btn} disabled={busy} onClick={() => call("GET", "/api/public/rooms")}><Play size={14} /> GET rooms</button>
+              <button className={btn} disabled={busy} onClick={() => call("POST", "/api/public/rooms/available", availBody)}><Play size={14} /> available (POST)</button>
+              <button className={btn} disabled={busy} onClick={() => call("GET", `/api/public/rooms/available${availQuery ? "?" + availQuery : ""}`)}><Play size={14} /> available (GET)</button>
               <button className={btn} disabled={busy} onClick={() => call("POST", "/api/public/rooms/checkin", checkinBody)}><Play size={14} /> checkin</button>
               <button className={btn} disabled={busy} onClick={() => call("POST", "/api/public/rooms/checkout-lookup", { name })}><Play size={14} /> checkout-lookup</button>
               <button className={btn} disabled={busy} onClick={() => call("POST", "/api/public/rooms/checkout", { name })}><Play size={14} /> checkout</button>
             </div>
-            <p className="mt-2 text-xs text-amber-300/80">ปุ่มเหล่านี้เขียนข้อมูลจริง ห้องบนบอร์ดจะเปลี่ยนตาม</p>
+            <p className="mt-2 text-xs text-slate-500">ปุ่ม available ใช้ช่องหัวข้อ/ชั้น (เว้นว่างได้ = ดูทุกห้องว่าง)</p>
+            <p className="mt-1 text-xs text-amber-300/80">ปุ่ม checkin / checkout เขียนข้อมูลจริง ห้องบนบอร์ดจะเปลี่ยนตาม</p>
           </div>
           <pre className={`${code} mt-3 max-h-80 min-h-24`} data-testid="api-result">
             {result ? `HTTP ${result.status} · ${result.ms} ms\n${result.body}` : "ผลลัพธ์จะแสดงที่นี่"}

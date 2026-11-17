@@ -9,7 +9,11 @@ export const db = new pg.Client({ connectionString: DB_URL });
 let connected = false;
 export async function connectDb() {
   if (!connected) {
-    await db.connect();
+    try {
+      await db.connect();
+    } catch (e) {
+      throw new Error(`Cannot connect to the test database (${e.message}). Is Postgres running and DATABASE_URL set?`);
+    }
     connected = true;
   }
 }

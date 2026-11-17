@@ -48,7 +48,59 @@
 
 ---
 
-## 2) เช็คอิน
+## 2) ดูห้องว่าง (ให้บอทใช้ตอบ "ตอนนี้ห้องไหนว่าง")
+
+- **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/available`
+- **Method:** `POST` (หรือ `GET` พร้อม query string ชื่อเดียวกัน)
+- **Headers:** `Content-Type: application/json` สำหรับ POST (+ `x-api-key` ถ้าเปิดใช้ **ทั้ง POST และ GET ของ endpoint นี้ต้องใช้ key**)
+- **Body / query (ใส่หรือไม่ใส่ก็ได้ทั้งคู่):**
+
+| field | ชนิด | ตัวอย่าง | หมายเหตุ |
+|---|---|---|---|
+| `topic` | string | `"A"` | `A` / `B` / `C` หรือชื่อเต็ม ถ้าใส่ จะแสดงเฉพาะชั้นที่หัวข้อนั้นทำได้ |
+| `floor` | number | `2` | 1, 2 หรือ 3 ถ้าใส่ จะแสดงเฉพาะชั้นนั้น |
+
+ตัวอย่าง:
+```json
+{}                                // ห้องว่างทุกชั้น
+{ "topic": "B" }                  // ห้องว่างเฉพาะชั้นที่ทำหัวข้อ B ได้ (ชั้น 2, 3)
+{ "floor": 2 }                    // ห้องว่างชั้น 2
+{ "topic": "B", "floor": 3 }      // หัวข้อ B ที่ชั้น 3
+```
+แบบ GET: `GET /api/public/rooms/available?topic=B&floor=3`
+
+**สำเร็จ** (HTTP 200) ตัวอย่างจาก `{ "topic": "B" }`:
+```json
+{
+  "ok": true, "code": "OK",
+  "message_th": "ชั้น 2 ว่าง 201, 202, 204 (ทำหัวข้อ A, B ได้); ชั้น 3 ว่าง 302, 303, 304 (ทำหัวข้อ B, C ได้)",
+  "data": {
+    "total_free": 6,
+    "floors": [
+      { "floor": 2, "allowed_topics": ["A", "B"], "free_rooms": ["201", "202", "204"], "occupied_count": 1 },
+      { "floor": 3, "allowed_topics": ["B", "C"], "free_rooms": ["302", "303", "304"], "occupied_count": 1 }
+    ]
+  }
+}
+```
+`message_th` เป็นสรุปสั้นๆ ที่บอทอ่านให้ผู้ใช้ได้ทันที ชั้นที่ไม่มีห้องว่างจะเขียนว่า "ชั้น N ไม่มีห้องว่าง"
+
+**ไม่มีห้องว่างตามเงื่อนไข** ยังเป็น HTTP 200 และ `ok: true` (ไม่ใช่ error): `message_th = "ตอนนี้ไม่มีห้องว่างตามเงื่อนไขนี้"`, `data.total_free = 0` และทุกชั้นมี `free_rooms: []` (ยังบอก `occupied_count` ให้)
+
+**รหัสผิดพลาด:**
+
+| `code` | HTTP | เมื่อไร | `data` |
+|---|---|---|---|
+| `TOPIC_NOT_FOUND` | 404 | หัวข้อไม่มี เช่น `"Z"` | `{ "valid_topics": ["A","B","C"] }` |
+| `ROOM_NOT_FOUND` | 404 | ชั้นไม่มี เช่น `9` หรือ `"abc"` | `{ "valid_floors": [1,2,3] }` |
+| `TOPIC_NOT_ALLOWED_ON_FLOOR` | 422 | หัวข้อกับชั้นไม่เข้ากัน เช่น A + ชั้น 3 (ข้อความเดียวกับตอนเช็คอิน: "หัวข้อ A ทำได้เฉพาะชั้น 1, 2 จองชั้น 3 ไม่ได้") | `{ "allowed_floors": [1,2] }` |
+| `UNAUTHORIZED` | 401 | ตั้ง `BOT_API_KEY` แต่ไม่ได้ส่ง `x-api-key` | `null` |
+
+ลำดับตรวจ: หัวข้อ → ชั้น → ความเข้ากันของหัวข้อกับชั้น
+
+---
+
+## 3) เช็คอิน
 
 - **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/checkin`
 - **Method:** `POST`
@@ -94,7 +146,7 @@
 
 ---
 
-## 3) หาห้องของผู้ที่จะเช็คเอาท์ (ใช้ยืนยันก่อนเช็คเอาท์)
+## 4) หาห้องของผู้ที่จะเช็คเอาท์ (ใช้ยืนยันก่อนเช็คเอาท์)
 
 - **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/checkout-lookup`
 - **Method:** `POST`
@@ -116,7 +168,7 @@
 
 ---
 
-## 4) เช็คเอาท์
+## 5) เช็คเอาท์
 
 - **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/checkout`
 - **Method:** `POST`
@@ -139,12 +191,19 @@
 
 1. เช็คอิน: ถามชื่อ → หัวข้อ (A/B/C) → ชั้น → ห้อง → **สรุปให้ผู้ใช้ยืนยัน** → เรียก `checkin` → ตอบด้วย `message_th`
 2. เช็คเอาท์: ถามชื่อ → เรียก `checkout-lookup` เพื่อบอกห้องที่จะคืน → ผู้ใช้ยืนยัน → เรียก `checkout`
-3. อยากรู้ว่าห้องไหนว่าง: เรียก `GET /api/public/rooms`
+3. ผู้ใช้ถามว่าห้องไหนว่าง (หรือก่อนเสนอห้องให้จอง): เรียก `available` ส่ง `topic` / `floor` ตามที่ผู้ใช้บอก แล้วอ่าน `message_th` ให้ฟัง
+4. ต้องการข้อมูลทุกห้องแบบละเอียด (ใครใช้อยู่ ใช้มากี่นาที): เรียก `GET /api/public/rooms`
 
 ## ทดสอบ endpoint ด้วย curl ก่อนตั้งใน Botnoi
 
 ```bash
 curl https://YOUR-SITE.vercel.app/api/public/rooms
+
+curl -X POST https://YOUR-SITE.vercel.app/api/public/rooms/available \
+  -H "Content-Type: application/json" \
+  -d '{"topic":"A"}'
+
+curl "https://YOUR-SITE.vercel.app/api/public/rooms/available?topic=A&floor=1"
 
 curl -X POST https://YOUR-SITE.vercel.app/api/public/rooms/checkin \
   -H "Content-Type: application/json" \
@@ -154,4 +213,4 @@ curl -X POST https://YOUR-SITE.vercel.app/api/public/rooms/checkout \
   -H "Content-Type: application/json" \
   -d '{"name":"Rover"}'
 ```
-(ถ้าเปิด `BOT_API_KEY` เพิ่ม `-H "x-api-key: <ค่า>"` ใน POST ทุกคำสั่ง)
+(ถ้าเปิด `BOT_API_KEY` เพิ่ม `-H "x-api-key: <ค่า>"` ในทุกคำสั่งยกเว้น `GET /api/public/rooms`)

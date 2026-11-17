@@ -15,7 +15,7 @@
 db/schema.sql                      สร้างตาราง + unique index + ข้อมูลตั้งต้น (รันซ้ำได้)
 src/lib/rooms.ts                   ตรรกะทั้งหมดที่คุยกับฐานข้อมูล (เช็คอิน/เอาท์/บอร์ด)
 src/lib/http.ts                    รูปแบบ response { ok, code, message_th, data } + เช็ค x-api-key
-src/app/api/public/rooms/...       4 endpoints
+src/app/api/public/rooms/...       5 endpoints (rooms, available, checkin, checkout-lookup, checkout)
 src/components/                    หน้าเว็บ (Board, RoomCard, ChatDock, ApiSection)
 src/config.ts                      AVATAR_IMAGE_URL (ใส่รูปแทนไอคอนผีเสื้อ) และความถี่ polling
 tests/                             เทสต์อัตโนมัติ
@@ -90,7 +90,7 @@ git push -u origin main
 
 | ชื่อ | ใช้ทำอะไร |
 |---|---|
-| `BOT_API_KEY` | ถ้าตั้ง ทุก POST ต้องส่ง header `x-api-key` ตรงกับค่านี้ ถ้าไม่ตั้ง = โหมดเดโม ใครก็เรียกได้ |
+| `BOT_API_KEY` | ถ้าตั้ง ทุก endpoint ยกเว้น `GET /api/public/rooms` (ที่หน้าเว็บใช้ดึงบอร์ด) ต้องส่ง header `x-api-key` ตรงกับค่านี้ ถ้าไม่ตั้ง = โหมดเดโม ใครก็เรียกได้ |
 | `RESPONSE_ALWAYS_200` | ตั้งเป็น `true` ถ้า Botnoi อ่านเนื้อหา response ของ HTTP 4xx ไม่ได้ (ผลจริงยังดูได้จาก `ok` / `code`) |
 
 หลังเพิ่มหรือแก้ตัวแปรต้อง **Redeploy** (Deployments → ⋯ → Redeploy) ตัวแปรจึงมีผล
@@ -127,17 +127,17 @@ git push -u origin main
 ```bash
 export DATABASE_URL="postgres://..."      # ฐานข้อมูลเทสต์ (ตัวเดียวกับที่แอปใช้)
 npm run build && npm run start            # เปิดแอปที่ http://localhost:3000 (อีก terminal)
-npm test                                  # 20 เคสหลัก
+npm test                                  # 30 เคสหลัก (api.test 20 + available.test 10)
 ```
 
-เทสต์ x-api-key (3 เคส) ต้องเปิดแอปอีกตัวที่ตั้ง `BOT_API_KEY`:
+เทสต์ x-api-key (4 เคส) ต้องเปิดแอปอีกตัวที่ตั้ง `BOT_API_KEY`:
 ```bash
 PORT=3001 BOT_API_KEY=secret123 npm run start
 TEST_KEY_BASE_URL=http://localhost:3001 TEST_KEY_VALUE=secret123 npm test
 ```
-ถ้าไม่ตั้ง `TEST_KEY_*` 3 เคสนี้จะถูกข้าม (skipped) ไม่ใช่ fail
+ถ้าไม่ตั้ง `TEST_KEY_*` 4 เคสนี้จะถูกข้าม (skipped) ไม่ใช่ fail
 
-เทสต์ครอบคลุม: เช็คอินสำเร็จ, หัวข้อ A ชั้น 3, ห้องมีคนใช้ (พร้อม suggestions), ชื่อเดิมเช็คอินซ้ำ, ยิงพร้อมกันห้องเดียวกัน (2 และ 20 request → สำเร็จ 1), ชื่อเดียวกันสองห้องพร้อมกัน, หัวข้อ/ห้องไม่มี, ข้อมูลไม่ครบ, ลำดับการตรวจ 1→6, lookup มี/ไม่มีชื่อ, เช็คเอาท์แล้วห้องว่างและจองใหม่ได้, ชื่อไม่สนตัวพิมพ์เล็กใหญ่, x-api-key
+เทสต์ครอบคลุม: เช็คอินสำเร็จ, หัวข้อ A ชั้น 3, ห้องมีคนใช้ (พร้อม suggestions), ชื่อเดิมเช็คอินซ้ำ, ยิงพร้อมกันห้องเดียวกัน (2 และ 20 request → สำเร็จ 1), ชื่อเดียวกันสองห้องพร้อมกัน, หัวข้อ/ห้องไม่มี, ข้อมูลไม่ครบ, ลำดับการตรวจ 1→6, lookup มี/ไม่มีชื่อ, เช็คเอาท์แล้วห้องว่างและจองใหม่ได้, ชื่อไม่สนตัวพิมพ์เล็กใหญ่, x-api-key, endpoint ห้องว่าง `available` (ไม่มี filter / filter หัวข้อ / filter ชั้น / คู่ที่ไม่เข้ากัน / หัวข้อหรือชั้นไม่มี / ไม่มีห้องว่าง / ห้องที่เพิ่งเช็คอินหายไปและกลับมาหลังเช็คเอาท์ / GET เทียบกับ POST)
 
 ---
 
