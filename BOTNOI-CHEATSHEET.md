@@ -1,12 +1,13 @@
 # Cheat sheet: ตั้งค่า Tool ของ Botnoi Agent (Shorekeeper)
 
-แทน `https://YOUR-SITE.vercel.app` ด้วย URL จริงของเว็บที่ deploy แล้ว
+**Base URL: `https://tethys-deep-lab.vercel.app`** (ไม่มี `/` ท้าย และไม่ต่อพาธ) ทุก endpoint ด้านล่างคือ Base URL + พาธ
+ตรวจบน URL จริงแล้วเมื่อ 17 พ.ย. 2026: endpoint ทั้ง 5 ตอบถูกต้อง
 
 ## ค่าที่ใช้ร่วมกันทุก endpoint
 
 | รายการ | ค่า |
 |---|---|
-| Base URL | `https://YOUR-SITE.vercel.app` |
+| Base URL | `https://tethys-deep-lab.vercel.app` |
 | Header | `Content-Type: application/json` (เฉพาะ POST) |
 | Header (ถ้าเปิด `BOT_API_KEY`) | `x-api-key: <ค่าที่ตั้งใน Vercel>` |
 | รูปแบบ response | `{ "ok": boolean, "code": string, "message_th": string, "data": ... }` |
@@ -19,7 +20,7 @@
 
 ## 1) ดูสถานะห้องทั้งหมด
 
-- **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms`
+- **URL:** `https://tethys-deep-lab.vercel.app/api/public/rooms`
 - **Method:** `GET`
 - **Headers:** ไม่ต้องใช้ (เปิดสาธารณะ แม้ตั้ง `BOT_API_KEY`)
 - **Body:** ไม่มี
@@ -50,7 +51,7 @@
 
 ## 2) ดูห้องว่าง (ให้บอทใช้ตอบ "ตอนนี้ห้องไหนว่าง")
 
-- **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/available`
+- **URL:** `https://tethys-deep-lab.vercel.app/api/public/rooms/available`
 - **Method:** `POST` (หรือ `GET` พร้อม query string ชื่อเดียวกัน)
 - **Headers:** `Content-Type: application/json` สำหรับ POST (+ `x-api-key` ถ้าเปิดใช้ **ทั้ง POST และ GET ของ endpoint นี้ต้องใช้ key**)
 - **Body / query (ใส่หรือไม่ใส่ก็ได้ทั้งคู่):**
@@ -102,7 +103,7 @@
 
 ## 3) เช็คอิน
 
-- **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/checkin`
+- **URL:** `https://tethys-deep-lab.vercel.app/api/public/rooms/checkin`
 - **Method:** `POST`
 - **Headers:** `Content-Type: application/json` (+ `x-api-key` ถ้าเปิดใช้)
 - **Body:**
@@ -148,7 +149,7 @@
 
 ## 4) หาห้องของผู้ที่จะเช็คเอาท์ (ใช้ยืนยันก่อนเช็คเอาท์)
 
-- **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/checkout-lookup`
+- **URL:** `https://tethys-deep-lab.vercel.app/api/public/rooms/checkout-lookup`
 - **Method:** `POST`
 - **Headers:** `Content-Type: application/json` (+ `x-api-key` ถ้าเปิดใช้)
 - **Body:** `{ "name": "Rover" }`
@@ -170,7 +171,7 @@
 
 ## 5) เช็คเอาท์
 
-- **URL:** `https://YOUR-SITE.vercel.app/api/public/rooms/checkout`
+- **URL:** `https://tethys-deep-lab.vercel.app/api/public/rooms/checkout`
 - **Method:** `POST`
 - **Headers:** `Content-Type: application/json` (+ `x-api-key` ถ้าเปิดใช้)
 - **Body:** `{ "name": "Rover" }`
@@ -197,19 +198,19 @@
 ## ทดสอบ endpoint ด้วย curl ก่อนตั้งใน Botnoi
 
 ```bash
-curl https://YOUR-SITE.vercel.app/api/public/rooms
+curl https://tethys-deep-lab.vercel.app/api/public/rooms
 
-curl -X POST https://YOUR-SITE.vercel.app/api/public/rooms/available \
+curl -X POST https://tethys-deep-lab.vercel.app/api/public/rooms/available \
   -H "Content-Type: application/json" \
   -d '{"topic":"A"}'
 
-curl "https://YOUR-SITE.vercel.app/api/public/rooms/available?topic=A&floor=1"
+curl "https://tethys-deep-lab.vercel.app/api/public/rooms/available?topic=A&floor=1"
 
-curl -X POST https://YOUR-SITE.vercel.app/api/public/rooms/checkin \
+curl -X POST https://tethys-deep-lab.vercel.app/api/public/rooms/checkin \
   -H "Content-Type: application/json" \
   -d '{"name":"Rover","topic":"A","floor":1,"room":"101"}'
 
-curl -X POST https://YOUR-SITE.vercel.app/api/public/rooms/checkout \
+curl -X POST https://tethys-deep-lab.vercel.app/api/public/rooms/checkout \
   -H "Content-Type: application/json" \
   -d '{"name":"Rover"}'
 ```
