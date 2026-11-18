@@ -9,7 +9,7 @@ export const BOTNOI = {
   name: "Shorekeeper",
   themeColor: "#0288D1", // header / bubble color of the widget (white text stays readable)
   locale: "th",
-  welcome: "สวัสดีค่ะ ดิฉัน Shorekeeper ผู้ดูแลศูนย์วิจัยใต้ดิน Tethys' Deep",
+  welcome: "สวัสดีค่ะ ดิฉัน Shorekeeper ผู้ดูแลศูนย์วิจัยใต้ดิน Tethys' Deep พิมพ์ \"ชอร์\" เพื่อเริ่มลงชื่อเข้า/ออกห้องวิจัยได้เลยค่ะ",
   greeting: "พิมพ์ \"ชอร์\" เพื่อเริ่ม แล้วเลือกลงชื่อเข้าหรือลงชื่อออกห้องวิจัยได้เลยค่ะ",
   defaultOpen: false, // true = chat window is open when the page loads
 };
