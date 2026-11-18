@@ -111,10 +111,12 @@ git push -u origin main
 
 ## ส่วนที่ 3 — ฝังแชทบอท Botnoi
 
-วิดเจ็ตแชทบอทฝังไว้ให้แล้ว (ปุ่มแชทมุมขวาล่างของเว็บ) ไม่ต้องวางสคริปต์เพิ่ม
+แชทบอทฝังไว้ให้แล้ว (ปุ่มแชทมุมขวาล่างของเว็บ) ไม่ต้องวางสคริปต์เพิ่ม
 
-1. ตั้งค่าหน้าตาที่ `src/config.ts` ในก้อน `BOTNOI`: `botId`, `logo` (URL รูปโปรไฟล์บอท), `name`, `themeColor` (สีธีม เช่น `#0288D1`), `locale` (`th`), `welcome`/`greeting` (ข้อความต้อนรับ) และ `defaultOpen` (`true` = เปิดหน้าต่างแชททันทีที่เข้าเว็บ)
-2. โค้ดฝังอยู่ที่ `src/components/BotnoiChat.tsx` (เทียบเท่าโค้ด embed ของ Botnoi แต่เรียก `BN.init` จาก React)
+> **ทำไมไม่ใช้วิดเจ็ตสำเร็จรูปของ Botnoi:** Botnoi ปิดไม่ให้หน้าแชทของตัวเองแสดงใน `<iframe>` บนเว็บอื่น (ขึ้น "console.botnoi.ai refused to connect") เว็บนี้จึงวาดกล่องแชทเองแล้วคุยกับบอทตัวเดิมผ่าน web-chat API ของ Botnoi: เซิร์ฟเวอร์ขอ token ผู้เยี่ยมชมที่ `/api/chat/session` แล้วเบราว์เซอร์ต่อ WebSocket ไปหา Botnoi โดยตรง ไม่ต้องตั้งค่าอะไรเพิ่มในหน้า Channels ของ Botnoi และไม่ต้องใช้ environment variable ใหม่
+
+1. ตั้งค่าหน้าตาที่ `src/config.ts` ในก้อน `BOTNOI`: `botId`, `logo` (URL รูปโปรไฟล์บอท), `name`, `themeColor` (สีธีม เช่น `#0288D1`), `locale` (`th`), `welcome` (ข้อความต้อนรับ) และ `defaultOpen` (`true` = เปิดหน้าต่างแชททันทีที่เข้าเว็บ)
+2. กล่องแชทอยู่ที่ `src/components/BotnoiChat.tsx` และเส้นทางขอ token อยู่ที่ `src/app/api/chat/session/route.ts` (ค่า `apiBase` / `wsBase` ของ Botnoi อยู่ใน `src/config.ts`)
 3. ลูกค้าพิมพ์ "ชอร์" ในแชทเพื่อปลุก Shorekeeper ตาม wake word ที่ตั้งไว้ใน Botnoi
 4. ตั้งค่า tool ของ agent ตามไฟล์ **BOTNOI-CHEATSHEET.md**
 
