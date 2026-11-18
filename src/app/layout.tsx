@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import NavBar from "@/components/NavBar";
+import BotnoiChat from "@/components/BotnoiChat";
 
 export const metadata: Metadata = {
-  title: "Tethys' Deep — ศูนย์วิจัยใต้ดิน",
+  title: { default: "Tethys' Deep — ศูนย์วิจัยใต้ดิน", template: "%s" },
   description: "บอร์ดสถานะห้องของศูนย์วิจัยใต้ดิน จองห้องผ่านแชทบอท Shorekeeper",
 };
 
@@ -17,7 +19,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <NavBar />
+        {children}
+        <footer className="border-t border-white/5 py-6 text-center text-xs text-slate-500">
+          โปรเจกต์ฝึกงาน ไม่เกี่ยวข้องกับ Kuro Games
+        </footer>
+        <BotnoiChat />
+      </body>
     </html>
   );
 }

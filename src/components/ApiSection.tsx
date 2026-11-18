@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageCircle, Bot, RefreshCw, DoorClosed, Play, Terminal, Info } from "lucide-react";
+import { MessageCircle, Bot, RefreshCw, DoorClosed, Play, Info } from "lucide-react";
 
 const STEPS = [
   { icon: MessageCircle, title: "คุยกับ Shorekeeper", text: "ผู้ใช้บอกชื่อ หัวข้อ ชั้น และห้องที่ต้องการในแชท" },
@@ -167,11 +167,7 @@ export default function ApiSection() {
     `rounded px-1.5 py-0.5 text-[11px] font-semibold ${m === "GET" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}`;
 
   return (
-    <section className="mt-14" id="api">
-      <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-white">
-        <Terminal size={20} className="text-glow" /> การทำงานของระบบ &amp; API
-      </h2>
-
+    <section id="api">
       <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {STEPS.map((s, i) => (
           <li key={s.title} className={`${box} p-4`}>

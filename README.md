@@ -1,7 +1,7 @@
 # Tethys' Deep — ศูนย์วิจัยใต้ดิน
 
 เว็บบอร์ดแสดงสถานะห้อง 12 ห้อง (ชั้น 1–3) ที่ให้แชทบอท **Shorekeeper** ของ Botnoi เช็คอิน/เช็คเอาท์แทนผู้ใช้ผ่าน REST API
-หน้าเว็บอ่านข้อมูลอย่างเดียว (ดึงใหม่ทุก 3 วินาที) ส่วนการเขียนข้อมูลทำที่ฝั่งเซิร์ฟเวอร์เท่านั้น
+หน้าเว็บดึงสถานะใหม่ทุก 3 วินาที และผู้ใช้กดที่ห้องเพื่อลงชื่อเข้า/ออกเองได้ ส่วนการเขียนข้อมูลทำที่ฝั่งเซิร์ฟเวอร์ผ่าน API เดียวกับที่บอทใช้
 
 - **Stack:** Next.js (App Router) + TypeScript + Tailwind + Postgres (Neon) — deploy บน Vercel
 - **ไม่มี:** ระบบล็อกอิน, LINE, realtime subscription (ใช้ polling แทน)
@@ -16,7 +16,9 @@ db/schema.sql                      สร้างตาราง + unique index
 src/lib/rooms.ts                   ตรรกะทั้งหมดที่คุยกับฐานข้อมูล (เช็คอิน/เอาท์/บอร์ด)
 src/lib/http.ts                    รูปแบบ response { ok, code, message_th, data } + เช็ค x-api-key
 src/app/api/public/rooms/...       5 endpoints (rooms, available, checkin, checkout-lookup, checkout)
-src/components/                    หน้าเว็บ (Board, RoomCard, RoomDialog, BotnoiChat, ApiSection)
+src/app/page.tsx                   หน้าแรก (/)  ·  src/app/lab/page.tsx  หน้าศูนย์วิจัย (/lab)  ·  src/app/api-docs/page.tsx  เอกสาร API (/api-docs)
+src/app/layout.tsx                 แถบเมนู + footer + วิดเจ็ตแชทบอท (อยู่ทุกหน้า)
+src/components/                    NavBar, Board, RoomCard, RoomDialog, HomeLive, PageHeader, ApiSection, BotnoiChat
 src/config.ts                      ตั้งค่าวิดเจ็ตแชทบอท Botnoi (bot_id โลโก้ ชื่อ สี ข้อความต้อนรับ) และความถี่ polling
 tests/                             เทสต์อัตโนมัติ
 BOTNOI-CHEATSHEET.md               ข้อมูลสำหรับตั้งค่า tool ใน Botnoi
