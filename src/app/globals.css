@@ -18,9 +18,3 @@ body {
   background-attachment: fixed;
 }
 
-/* Placeholder text that disappears as soon as the Botnoi script puts something inside the slot. */
-#chatbot-slot:empty::before {
-  content: "แชทบอทจะเชื่อมที่นี่";
-  color: #64748b;
-  font-size: 0.9rem;
-}

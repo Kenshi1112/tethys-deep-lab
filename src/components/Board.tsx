@@ -61,7 +61,7 @@ export default function Board() {
           <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_18px_rgba(79,195,247,0.45)] sm:text-4xl">
             Tethys&apos; Deep
           </h1>
-          <p className="mt-1 text-slate-400">ศูนย์วิจัยใต้ดิน · จองผ่านแชทบอท Shorekeeper หรือกดที่ห้องเพื่อลงชื่อเข้า/ออกเอง</p>
+          <p className="mt-1 text-slate-400">ศูนย์วิจัยใต้ดิน · จองผ่านแชทบอท Shorekeeper (พิมพ์ "ชอร์" เพื่อเริ่ม) หรือกดที่ห้องเพื่อลงชื่อเข้า/ออกเอง</p>
         </div>
         <div className="flex gap-3">
           <div className="rounded-xl border border-emerald-400/30 bg-emerald-400/5 px-4 py-2 text-center">

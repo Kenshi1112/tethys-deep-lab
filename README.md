@@ -16,8 +16,8 @@ db/schema.sql                      สร้างตาราง + unique index
 src/lib/rooms.ts                   ตรรกะทั้งหมดที่คุยกับฐานข้อมูล (เช็คอิน/เอาท์/บอร์ด)
 src/lib/http.ts                    รูปแบบ response { ok, code, message_th, data } + เช็ค x-api-key
 src/app/api/public/rooms/...       5 endpoints (rooms, available, checkin, checkout-lookup, checkout)
-src/components/                    หน้าเว็บ (Board, RoomCard, ChatDock, ApiSection)
-src/config.ts                      AVATAR_IMAGE_URL (ใส่รูปแทนไอคอนผีเสื้อ) และความถี่ polling
+src/components/                    หน้าเว็บ (Board, RoomCard, RoomDialog, BotnoiChat, ApiSection)
+src/config.ts                      ตั้งค่าวิดเจ็ตแชทบอท Botnoi (bot_id โลโก้ ชื่อ สี ข้อความต้อนรับ) และความถี่ polling
 tests/                             เทสต์อัตโนมัติ
 BOTNOI-CHEATSHEET.md               ข้อมูลสำหรับตั้งค่า tool ใน Botnoi
 ```
@@ -109,16 +109,12 @@ git push -u origin main
 
 ## ส่วนที่ 3 — ฝังแชทบอท Botnoi
 
-1. แผง Shorekeeper (กดปุ่มวงกลมมุมขวาล่างเพื่อเปิด) มี `<div id="chatbot-slot"></div>` เตรียมไว้แล้วใน `src/components/ChatDock.tsx` ไม่ต้องแก้ไฟล์นี้
-2. วาง embed script ของ Botnoi ใน `src/app/layout.tsx` ก่อนปิด `</body>` เช่น
-   ```tsx
-   import Script from "next/script";
-   // ...
-   <Script src="https://<URL สคริปต์ที่ Botnoi ให้มา>" strategy="afterInteractive" />
-   ```
-   (ถ้า Botnoi ให้โค้ดที่ต้องระบุ element ปลายทาง ให้ใช้ `#chatbot-slot`)
-3. ตั้งค่า tool ของ agent ตามไฟล์ **BOTNOI-CHEATSHEET.md**
-4. อยากเปลี่ยนไอคอนผีเสื้อเป็นรูปของตัวเอง: ใส่ URL รูปใน `AVATAR_IMAGE_URL` ที่ `src/config.ts` (ใช้เฉพาะรูปที่คุณมีสิทธิ์ใช้งาน)
+วิดเจ็ตแชทบอทฝังไว้ให้แล้ว (ปุ่มแชทมุมขวาล่างของเว็บ) ไม่ต้องวางสคริปต์เพิ่ม
+
+1. ตั้งค่าหน้าตาที่ `src/config.ts` ในก้อน `BOTNOI`: `botId`, `logo` (URL รูปโปรไฟล์บอท), `name`, `themeColor` (สีธีม เช่น `#0288D1`), `locale` (`th`), `welcome`/`greeting` (ข้อความต้อนรับ) และ `defaultOpen` (`true` = เปิดหน้าต่างแชททันทีที่เข้าเว็บ)
+2. โค้ดฝังอยู่ที่ `src/components/BotnoiChat.tsx` (เทียบเท่าโค้ด embed ของ Botnoi แต่เรียก `BN.init` จาก React)
+3. ลูกค้าพิมพ์ "ชอร์" ในแชทเพื่อปลุก Shorekeeper ตาม wake word ที่ตั้งไว้ใน Botnoi
+4. ตั้งค่า tool ของ agent ตามไฟล์ **BOTNOI-CHEATSHEET.md**
 
 ---
 

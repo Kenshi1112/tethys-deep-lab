@@ -1,6 +1,6 @@
 import Board from "@/components/Board";
 import ApiSection from "@/components/ApiSection";
-import ChatDock from "@/components/ChatDock";
+import BotnoiChat from "@/components/BotnoiChat";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
       <footer className="border-t border-white/5 py-6 text-center text-xs text-slate-500">
         โปรเจกต์ฝึกงาน ไม่เกี่ยวข้องกับ Kuro Games
       </footer>
-      <ChatDock />
+      <BotnoiChat />
     </>
   );
 }
