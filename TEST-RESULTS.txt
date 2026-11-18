@@ -1,42 +1,218 @@
-✔ GET /rooms returns 12 rooms, the 3 demo bookings and topic floors (56.823617ms)
-✔ check-in succeeds and the room shows as occupied on the board (22.998842ms)
-✔ topic can be given as a code in any case, or as the full name in any case (34.227195ms)
-✔ floor may be sent as a string, and the name is trimmed (13.46977ms)
-✔ topic A on floor 3 -> TOPIC_NOT_ALLOWED_ON_FLOOR with allowed floors (12.663875ms)
-✔ occupied room -> ROOM_OCCUPIED with suggestions on allowed floors only (9.964807ms)
-✔ same name checking in twice -> ALREADY_CHECKED_IN (20.053265ms)
-✔ unknown topic -> TOPIC_NOT_FOUND (9.499195ms)
-✔ unknown room, or room on the wrong floor -> ROOM_NOT_FOUND (23.022644ms)
-✔ missing fields -> MISSING_FIELDS (each field, blank values, empty body, broken JSON) (31.440508ms)
-✔ validation runs in the documented order (21.881445ms)
-✔ two simultaneous check-ins for the same room: only one succeeds (65.776986ms)
-✔ 20 simultaneous check-ins for one room: exactly one succeeds (96.409642ms)
-✔ one name checking in to two rooms at the same moment: only one succeeds (11.820803ms)
-✔ checkout-lookup finds an existing person (case-insensitive, trimmed) (15.527217ms)
-✔ checkout-lookup for an unknown name -> NOT_FOUND (15.452797ms)
-✔ checkout frees the room and the room can be taken again (29.024949ms)
-✔ checkout for an unknown name, or a second checkout -> NOT_FOUND (16.706837ms)
-✔ name matching is case-insensitive for check-in and check-out (20.806701ms)
-✔ every response has the { ok, code, message_th, data } shape and Thai text (14.797041ms)
-✔ POST without key -> 401 UNAUTHORIZED (105.035754ms)
-✔ POST with a wrong key -> 401, with the right key -> works (37.928184ms)
-✔ GET /rooms stays public even when a key is set (the browser needs it) (8.685358ms)
-✔ available: POST and GET need the key too (only GET /rooms is public) (26.115689ms)
-✔ no filter: all free rooms grouped by floor, with allowed topics and occupied counts (46.988034ms)
-✔ empty body and broken JSON behave like no filter (18.941155ms)
-✔ topic filter returns only the floors that topic is allowed on (30.263261ms)
-✔ floor filter returns only that floor (number or string) (16.312473ms)
-✔ topic + floor: valid pair works, invalid pair -> TOPIC_NOT_ALLOWED_ON_FLOOR (same text as check-in) (15.790717ms)
-✔ unknown topic -> TOPIC_NOT_FOUND, unknown floor -> ROOM_NOT_FOUND (26.384329ms)
-✔ nothing free: still ok:true, empty lists, the fixed Thai message (71.77173ms)
-✔ a room that was just checked in disappears from the list, and comes back after checkout (15.705766ms)
-✔ GET with query params gives the same answer as POST with a body (68.119249ms)
-✔ response shape: { ok, code, message_th, data } and data = { total_free, floors[] } (4.870314ms)
-ℹ tests 34
-ℹ suites 0
-ℹ pass 34
-ℹ fail 0
-ℹ cancelled 0
-ℹ skipped 0
-ℹ todo 0
-ℹ duration_ms 1197.611143
+
+> tethys-deep-lab@1.0.0 test
+> node --test --test-concurrency=1 tests/api.test.mjs tests/available.test.mjs tests/apikey.test.mjs
+
+TAP version 13
+# Subtest: GET /rooms returns 12 rooms, the 3 demo bookings and topic floors
+ok 1 - GET /rooms returns 12 rooms, the 3 demo bookings and topic floors
+  ---
+  duration_ms: 117.290743
+  type: 'test'
+  ...
+# Subtest: check-in succeeds and the room shows as occupied on the board
+ok 2 - check-in succeeds and the room shows as occupied on the board
+  ---
+  duration_ms: 32.477214
+  type: 'test'
+  ...
+# Subtest: topic can be given as a code in any case, or as the full name in any case
+ok 3 - topic can be given as a code in any case, or as the full name in any case
+  ---
+  duration_ms: 35.065739
+  type: 'test'
+  ...
+# Subtest: floor may be sent as a string, and the name is trimmed
+ok 4 - floor may be sent as a string, and the name is trimmed
+  ---
+  duration_ms: 11.103201
+  type: 'test'
+  ...
+# Subtest: topic A on floor 3 -> TOPIC_NOT_ALLOWED_ON_FLOOR with allowed floors
+ok 5 - topic A on floor 3 -> TOPIC_NOT_ALLOWED_ON_FLOOR with allowed floors
+  ---
+  duration_ms: 10.500762
+  type: 'test'
+  ...
+# Subtest: occupied room -> ROOM_OCCUPIED with suggestions on allowed floors only
+ok 6 - occupied room -> ROOM_OCCUPIED with suggestions on allowed floors only
+  ---
+  duration_ms: 12.991171
+  type: 'test'
+  ...
+# Subtest: same name checking in twice -> ALREADY_CHECKED_IN
+ok 7 - same name checking in twice -> ALREADY_CHECKED_IN
+  ---
+  duration_ms: 31.403968
+  type: 'test'
+  ...
+# Subtest: unknown topic -> TOPIC_NOT_FOUND
+ok 8 - unknown topic -> TOPIC_NOT_FOUND
+  ---
+  duration_ms: 11.380062
+  type: 'test'
+  ...
+# Subtest: unknown room, or room on the wrong floor -> ROOM_NOT_FOUND
+ok 9 - unknown room, or room on the wrong floor -> ROOM_NOT_FOUND
+  ---
+  duration_ms: 37.188343
+  type: 'test'
+  ...
+# Subtest: missing fields -> MISSING_FIELDS (each field, blank values, empty body, broken JSON)
+ok 10 - missing fields -> MISSING_FIELDS (each field, blank values, empty body, broken JSON)
+  ---
+  duration_ms: 32.853321
+  type: 'test'
+  ...
+# Subtest: validation runs in the documented order
+ok 11 - validation runs in the documented order
+  ---
+  duration_ms: 27.931234
+  type: 'test'
+  ...
+# Subtest: two simultaneous check-ins for the same room: only one succeeds
+ok 12 - two simultaneous check-ins for the same room: only one succeeds
+  ---
+  duration_ms: 86.106424
+  type: 'test'
+  ...
+# Subtest: 20 simultaneous check-ins for one room: exactly one succeeds
+ok 13 - 20 simultaneous check-ins for one room: exactly one succeeds
+  ---
+  duration_ms: 95.96906
+  type: 'test'
+  ...
+# Subtest: one name checking in to two rooms at the same moment: only one succeeds
+ok 14 - one name checking in to two rooms at the same moment: only one succeeds
+  ---
+  duration_ms: 16.230606
+  type: 'test'
+  ...
+# Subtest: checkout-lookup finds an existing person (case-insensitive, trimmed)
+ok 15 - checkout-lookup finds an existing person (case-insensitive, trimmed)
+  ---
+  duration_ms: 20.719992
+  type: 'test'
+  ...
+# Subtest: checkout-lookup for an unknown name -> NOT_FOUND
+ok 16 - checkout-lookup for an unknown name -> NOT_FOUND
+  ---
+  duration_ms: 22.373512
+  type: 'test'
+  ...
+# Subtest: checkout frees the room and the room can be taken again
+ok 17 - checkout frees the room and the room can be taken again
+  ---
+  duration_ms: 34.146755
+  type: 'test'
+  ...
+# Subtest: checkout for an unknown name, or a second checkout -> NOT_FOUND
+ok 18 - checkout for an unknown name, or a second checkout -> NOT_FOUND
+  ---
+  duration_ms: 24.012937
+  type: 'test'
+  ...
+# Subtest: name matching is case-insensitive for check-in and check-out
+ok 19 - name matching is case-insensitive for check-in and check-out
+  ---
+  duration_ms: 30.095247
+  type: 'test'
+  ...
+# Subtest: every response has the { ok, code, message_th, data } shape and Thai text
+ok 20 - every response has the { ok, code, message_th, data } shape and Thai text
+  ---
+  duration_ms: 17.538065
+  type: 'test'
+  ...
+# Subtest: POST without key -> 401 UNAUTHORIZED
+ok 21 - POST without key -> 401 UNAUTHORIZED
+  ---
+  duration_ms: 120.356165
+  type: 'test'
+  ...
+# Subtest: POST with a wrong key -> 401, with the right key -> works
+ok 22 - POST with a wrong key -> 401, with the right key -> works
+  ---
+  duration_ms: 50.352852
+  type: 'test'
+  ...
+# Subtest: GET /rooms stays public even when a key is set (the browser needs it)
+ok 23 - GET /rooms stays public even when a key is set (the browser needs it)
+  ---
+  duration_ms: 10.962938
+  type: 'test'
+  ...
+# Subtest: available: POST and GET need the key too (only GET /rooms is public)
+ok 24 - available: POST and GET need the key too (only GET /rooms is public)
+  ---
+  duration_ms: 57.56124
+  type: 'test'
+  ...
+# Subtest: no filter: all free rooms grouped by floor, with allowed topics and occupied counts
+ok 25 - no filter: all free rooms grouped by floor, with allowed topics and occupied counts
+  ---
+  duration_ms: 80.221999
+  type: 'test'
+  ...
+# Subtest: empty body and broken JSON behave like no filter
+ok 26 - empty body and broken JSON behave like no filter
+  ---
+  duration_ms: 24.977521
+  type: 'test'
+  ...
+# Subtest: topic filter returns only the floors that topic is allowed on
+ok 27 - topic filter returns only the floors that topic is allowed on
+  ---
+  duration_ms: 63.03938
+  type: 'test'
+  ...
+# Subtest: floor filter returns only that floor (number or string)
+ok 28 - floor filter returns only that floor (number or string)
+  ---
+  duration_ms: 26.329444
+  type: 'test'
+  ...
+# Subtest: topic + floor: valid pair works, invalid pair -> TOPIC_NOT_ALLOWED_ON_FLOOR (same text as check-in)
+ok 29 - topic + floor: valid pair works, invalid pair -> TOPIC_NOT_ALLOWED_ON_FLOOR (same text as check-in)
+  ---
+  duration_ms: 21.609029
+  type: 'test'
+  ...
+# Subtest: unknown topic -> TOPIC_NOT_FOUND, unknown floor -> ROOM_NOT_FOUND
+ok 30 - unknown topic -> TOPIC_NOT_FOUND, unknown floor -> ROOM_NOT_FOUND
+  ---
+  duration_ms: 37.340836
+  type: 'test'
+  ...
+# Subtest: nothing free: still ok:true, empty lists, the fixed Thai message
+ok 31 - nothing free: still ok:true, empty lists, the fixed Thai message
+  ---
+  duration_ms: 108.557983
+  type: 'test'
+  ...
+# Subtest: a room that was just checked in disappears from the list, and comes back after checkout
+ok 32 - a room that was just checked in disappears from the list, and comes back after checkout
+  ---
+  duration_ms: 21.728643
+  type: 'test'
+  ...
+# Subtest: GET with query params gives the same answer as POST with a body
+ok 33 - GET with query params gives the same answer as POST with a body
+  ---
+  duration_ms: 68.752154
+  type: 'test'
+  ...
+# Subtest: response shape: { ok, code, message_th, data } and data = { total_free, floors[] }
+ok 34 - response shape: { ok, code, message_th, data } and data = { total_free, floors[] }
+  ---
+  duration_ms: 7.326138
+  type: 'test'
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1614.292681

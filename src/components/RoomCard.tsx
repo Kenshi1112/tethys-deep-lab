@@ -2,18 +2,20 @@ import { Lock, DoorOpen, Clock, FlaskConical } from "lucide-react";
 import { usedFor } from "@/lib/format";
 import type { RoomRow } from "@/lib/rooms";
 
-// A room card only shows status. Booking is done through the chatbot, so this is NOT a button.
-export default function RoomCard({ room, nowMs }: { room: RoomRow; nowMs: number }) {
+// Click a free room to check in, click an occupied room to check out.
+export default function RoomCard({ room, nowMs, onSelect }: { room: RoomRow; nowMs: number; onSelect: (room: RoomRow) => void }) {
   const occupied = room.status === "occupied";
   return (
-    <div
-      title={occupied ? "ห้องนี้มีคนใช้อยู่ ไม่สามารถจองได้" : "จองผ่านแชทบอท Shorekeeper"}
+    <button
+      type="button"
+      onClick={() => onSelect(room)}
+      title={occupied ? "กดเพื่อลงชื่อออก" : "กดเพื่อลงชื่อเข้า"}
       data-testid={`room-${room.code}`}
       data-status={room.status}
-      className={`rounded-xl border p-3 transition ${
+      className={`w-full rounded-xl border p-3 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-glow ${
         occupied
-          ? "cursor-not-allowed border-rose-400/20 bg-rose-950/20 opacity-70"
-          : "border-emerald-400/30 bg-emerald-400/5 shadow-[0_0_18px_-6px_rgba(52,211,153,0.5)]"
+          ? "border-rose-400/30 bg-rose-950/20 hover:border-rose-300/60 hover:bg-rose-950/40"
+          : "border-emerald-400/30 bg-emerald-400/5 shadow-[0_0_18px_-6px_rgba(52,211,153,0.5)] hover:border-emerald-300/70 hover:bg-emerald-400/10"
       }`}
     >
       <div className="flex flex-col items-start gap-1">
@@ -38,6 +40,6 @@ export default function RoomCard({ room, nowMs }: { room: RoomRow; nowMs: number
           </div>
         </div>
       )}
-    </div>
+    </button>
   );
 }

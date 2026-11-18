@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Waves, Layers, DoorOpen, Activity, TriangleAlert } from "lucide-react";
 import RoomCard from "./RoomCard";
+import RoomDialog, { type DialogMode } from "./RoomDialog";
 import { POLL_INTERVAL_MS } from "@/config";
 import type { RoomRow, Topic } from "@/lib/rooms";
 
@@ -21,33 +22,32 @@ export default function Board() {
   const [selected, setSelected] = useState<string | null>(null); // selected topic code
   const skew = useRef(0); // server clock minus browser clock, so "time in use" is right
 
+  const [dialog, setDialog] = useState<{ code: string; mode: DialogMode } | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/public/rooms", { cache: "no-store" });
+      const json = await res.json();
+      if (json.ok) {
+        skew.current = new Date(json.data.server_time).getTime() - Date.now();
+        setData(json.data);
+        setFailed(false);
+      } else setFailed(true);
+    } catch {
+      setFailed(true);
+    }
+  }, []);
+
   // Poll the public read-only endpoint every few seconds.
   useEffect(() => {
-    let stop = false;
-    async function load() {
-      try {
-        const res = await fetch("/api/public/rooms", { cache: "no-store" });
-        const json = await res.json();
-        if (stop) return;
-        if (json.ok) {
-          skew.current = new Date(json.data.server_time).getTime() - Date.now();
-          setData(json.data);
-          setFailed(false);
-        } else setFailed(true);
-      } catch {
-        if (!stop) setFailed(true);
-      }
-    }
     load();
     const id = setInterval(load, POLL_INTERVAL_MS);
-    return () => {
-      stop = true;
-      clearInterval(id);
-    };
-  }, []);
+    return () => clearInterval(id);
+  }, [load]);
 
   const nowMs = Date.now() + skew.current;
   const topics = data?.topics ?? [];
+  const dialogRoom = dialog ? data?.rooms.find((r) => r.code === dialog.code) ?? null : null;
   const selectedTopic = topics.find((t) => t.code === selected) ?? null;
 
   return (
@@ -61,7 +61,7 @@ export default function Board() {
           <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_18px_rgba(79,195,247,0.45)] sm:text-4xl">
             Tethys&apos; Deep
           </h1>
-          <p className="mt-1 text-slate-400">ศูนย์วิจัยใต้ดิน · จองห้องผ่านแชทบอท Shorekeeper</p>
+          <p className="mt-1 text-slate-400">ศูนย์วิจัยใต้ดิน · จองผ่านแชทบอท Shorekeeper หรือกดที่ห้องเพื่อลงชื่อเข้า/ออกเอง</p>
         </div>
         <div className="flex gap-3">
           <div className="rounded-xl border border-emerald-400/30 bg-emerald-400/5 px-4 py-2 text-center">
@@ -154,13 +154,24 @@ export default function Board() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {data
-                  ? rooms.map((r) => <RoomCard key={r.code} room={r} nowMs={nowMs} />)
+                  ? rooms.map((r) => <RoomCard key={r.code} room={r} nowMs={nowMs} onSelect={(room) => setDialog({ code: room.code, mode: room.status === "occupied" ? "checkout" : "checkin" })} />)
                   : [0, 1, 2, 3].map((i) => <div key={i} className="h-[72px] animate-pulse rounded-xl bg-white/5" />)}
               </div>
             </div>
           );
         })}
       </section>
+
+      {dialogRoom && dialog && (
+        <RoomDialog
+          key={`${dialog.code}-${dialog.mode}`}
+          room={dialogRoom}
+          mode={dialog.mode}
+          topics={topics}
+          onClose={() => setDialog(null)}
+          onDone={load}
+        />
+      )}
 
       {/* 7. Legend */}
       <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-400">
@@ -170,6 +181,7 @@ export default function Board() {
         <span className="flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-full bg-rose-400" /> มีคนใช้อยู่
         </span>
+        <span className="text-slate-500">· กดที่ห้องเพื่อลงชื่อเข้า (ห้องว่าง) หรือออก (ห้องที่มีคนใช้)</span>
         <span className="text-slate-500">· อัปเดตอัตโนมัติทุก {POLL_INTERVAL_MS / 1000} วินาที</span>
       </div>
     </div>
